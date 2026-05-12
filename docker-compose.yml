@@ -1,0 +1,35 @@
+volumes:
+  postgres:
+
+services:
+  postgres:
+    image: 'postgres:17.2-alpine3.21'
+    container_name: 'pizza-postgres'
+    env_file:
+      - ./.env
+    restart: always
+    ports:
+      - '5445:5432'
+    volumes:
+      - ./.postgres:/docker-entrypoint-initdb.d
+      - 'postgres:/var/lib/postgresql/data'
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U pizza_user -d pizza_db']
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  pizza:
+    build:
+      context: '.'
+      target: 'pizza'
+    image: 'fp-pizza'
+    container_name: 'fp_pizza'
+    restart: always
+    env_file:
+      - ./.env
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - '3002:3002'
