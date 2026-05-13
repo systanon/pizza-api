@@ -1,20 +1,36 @@
 package main
 
 import (
-	"log"
+	"pizza-backend/internal/config"
+	"pizza-backend/internal/database"
+	"pizza-backend/internal/handler"
+	"pizza-backend/internal/repository"
+	"pizza-backend/internal/service"
 
-	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
 )
 
 func main() {
-	db, err := sqlx.Connect("postgres", "postgres://pizza_user:pizza_pass@postgres:5432/pizza_db?sslmode=disable")
-	if err != nil {
-		log.Fatal("failed to connect to database:", err)
-	}
+	cfg := config.Load()
+
+	db := database.NewPostgres(cfg.DatabaseURL)
 	defer db.Close()
 
-	log.Println("connected to database")
+	database.RunMigrations(cfg.DatabaseURL)
 
-	select {}
+	// repositories
+	productRepo := repository.NewProductRepo(db)
+	categoryRepo := repository.NewCategoryRepo(db)
+
+	// services
+	productService := service.NewProductService(productRepo)
+	categoryService := service.NewCategoryService(categoryRepo)
+
+	// handlers
+	productHandler := handler.NewProductHandler(productService)
+	categoryHandler := handler.NewCategoryHandler(categoryService)
+
+	// router
+	r := NewRouter(productHandler, categoryHandler)
+	r.Run(cfg.Addr)
 }
