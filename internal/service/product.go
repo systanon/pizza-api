@@ -63,3 +63,7 @@ func (s *ProductService) GetProductList(ctx context.Context, q model.ProductQuer
 
 	return products, count, pages, nil
 }
+
+func (s *ProductService) GetProductByID(ctx context.Context, id int64) (*model.Product, error) {
+	return s.repo.GetProductByID(ctx, id)
+}

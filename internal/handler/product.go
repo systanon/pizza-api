@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"errors"
 	"net/http"
 	"pizza-backend/internal/apperror"
 	"pizza-backend/internal/model"
@@ -59,4 +60,24 @@ func (h *ProductHandler) GetProductList(c *gin.Context) {
 	c.Header("X-Total-Count", strconv.Itoa(total))
 	c.Header("X-Total-Pages", strconv.Itoa(pages))
 	response.RespondSuccess(c, http.StatusOK, result, "product list retrieved successfully")
+}
+
+func (h *ProductHandler) GetProductByID(c *gin.Context) {
+	id, err := strconv.ParseInt(c.Param("id"), 10, 64)
+	if err != nil {
+		response.RespondError(c, http.StatusBadRequest, apperror.CodeValidation, "invalid id")
+		return
+	}
+
+	product, err := h.service.GetProductByID(c, id)
+	if err != nil {
+		if errors.Is(err, apperror.ErrNotFound) {
+			response.RespondError(c, http.StatusNotFound, apperror.CodeNotFound, "product not found")
+			return
+		}
+		response.RespondError(c, http.StatusInternalServerError, apperror.CodeInternal, err.Error())
+		return
+	}
+
+	response.RespondSuccess(c, http.StatusOK, product, "")
 }
