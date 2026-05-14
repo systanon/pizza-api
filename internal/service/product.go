@@ -18,7 +18,7 @@ func NewProductService(r ProductRepository) *ProductService {
 	return &ProductService{repo: r}
 }
 
-func (s *ProductService) GetProductList(ctx context.Context, q model.ProductQuery) ([]model.Product, int, int, error) {
+func (s *ProductService) GetProductList(ctx context.Context, q model.ProductParams) ([]model.Product, int, int, error) {
 	const defaultLimit = 20
 	const defaultSortOrder = "DESC"
 

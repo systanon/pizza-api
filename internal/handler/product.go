@@ -3,6 +3,7 @@ package handler
 import (
 	"errors"
 	"net/http"
+	"pizza-backend/internal/api"
 	"pizza-backend/internal/apperror"
 	"pizza-backend/internal/model"
 	"pizza-backend/internal/response"
@@ -21,14 +22,14 @@ func NewProductHandler(s *service.ProductService) *ProductHandler {
 }
 
 func (h *ProductHandler) GetProductList(c *gin.Context) {
-	var query model.ProductQuery
+	var query api.GetProductQueryList
 
 	if err := c.ShouldBindQuery(&query); err != nil {
 		response.RespondError(c, http.StatusBadRequest, apperror.CodeValidation, err.Error())
 		return
 	}
 
-	params := model.ProductQuery{
+	params := model.ProductParams{
 		Offset:    query.Offset,
 		Limit:     query.Limit,
 		Page:      query.Page,
@@ -44,10 +45,10 @@ func (h *ProductHandler) GetProductList(c *gin.Context) {
 		return
 	}
 
-	var result = make([]model.Product, 0, len(products))
+	var result = make([]api.Product, 0, len(products))
 	for _, product := range products {
 
-		result = append(result, model.Product{
+		result = append(result, api.Product{
 			ID:          product.ID,
 			CategoryID:  product.CategoryID,
 			Name:        product.Name,
