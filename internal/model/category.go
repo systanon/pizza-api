@@ -3,8 +3,8 @@ package model
 import "time"
 
 type Category struct {
-	ID        int64     `json:"id" db:"id"`
-	Name      string    `json:"name" db:"name"`
-	Slug      string    `json:"slug" db:"slug"`
-	CreatedAt time.Time `json:"created_at" db:"created_at"`
+	ID        int64     `db:"id"`
+	Name      string    `db:"name"`
+	Slug      string    `db:"slug"`
+	CreatedAt time.Time `db:"created_at"`
 }
