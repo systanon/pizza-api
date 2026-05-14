@@ -30,12 +30,13 @@ func (h *ProductHandler) GetProductList(c *gin.Context) {
 	}
 
 	params := model.ProductParams{
-		Offset:    query.Offset,
-		Limit:     query.Limit,
-		Page:      query.Page,
-		PerPage:   query.PerPage,
-		Q:         query.Q,
-		SortOrder: query.SortOrder,
+		CategoryID: query.CategoryID,
+		Offset:     query.Offset,
+		Limit:      query.Limit,
+		Page:       query.Page,
+		PerPage:    query.PerPage,
+		Q:          query.Q,
+		SortOrder:  query.SortOrder,
 	}
 
 	products, total, pages, err := h.service.GetProductList(c, params)
