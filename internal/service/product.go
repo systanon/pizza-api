@@ -19,7 +19,7 @@ func NewProductService(r ProductRepository) *ProductService {
 }
 
 func (s *ProductService) GetProductList(ctx context.Context, q model.ProductParams) ([]model.Product, int, int, error) {
-	const defaultLimit = 20
+	const defaultLimit = 10
 	const defaultSortOrder = "DESC"
 
 	offset := 0
