@@ -7,7 +7,7 @@ import (
 
 type ProductRepository interface {
 	GetProductList(ctx context.Context, f model.ProductFilter) ([]model.Product, int, error)
-	GetProductByID(ctx context.Context, id int64) (*model.Product, error)
+	GetProductByID(ctx context.Context, id int64) (*model.ProductDetailRepositoryDTO, error)
 }
 
 type ProductService struct {
@@ -64,6 +64,25 @@ func (s *ProductService) GetProductList(ctx context.Context, q model.ProductPara
 	return products, count, pages, nil
 }
 
-func (s *ProductService) GetProductByID(ctx context.Context, id int64) (*model.Product, error) {
-	return s.repo.GetProductByID(ctx, id)
+func (s *ProductService) GetProductByID(ctx context.Context, id int64) (*model.ProductDTO, error) {
+	product, err := s.repo.GetProductByID(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+	result := model.ProductDTO{
+		Product:  product.Product,
+		Variants: []model.VariantPriceDTO{},
+	}
+
+	for _, variant := range product.Variants {
+		result.Variants = append(result.Variants, model.VariantPriceDTO{
+			ID:    variant.ID,
+			Name:  variant.Name,
+			Unit:  variant.Unit,
+			Price: variant.Price,
+			Value: variant.Value,
+		})
+	}
+
+	return &result, nil
 }
