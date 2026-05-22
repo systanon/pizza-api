@@ -7,4 +7,5 @@ type Category struct {
 	Name      string    `db:"name"`
 	Slug      string    `db:"slug"`
 	CreatedAt time.Time `db:"created_at"`
+	UpdatedAt time.Time `db:"updated_at"`
 }
