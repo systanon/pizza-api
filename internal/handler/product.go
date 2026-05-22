@@ -54,9 +54,7 @@ func (h *ProductHandler) GetProductList(c *gin.Context) {
 			CategoryID:  product.CategoryID,
 			Name:        product.Name,
 			Description: product.Description,
-			Price:       product.Price,
 			ImageURL:    product.ImageURL,
-			CreatedAt:   product.CreatedAt,
 		})
 	}
 	c.Header("X-Total-Count", strconv.Itoa(total))
@@ -81,5 +79,26 @@ func (h *ProductHandler) GetProductByID(c *gin.Context) {
 		return
 	}
 
-	response.RespondSuccess(c, http.StatusOK, product, "")
+	apiVariants := make([]api.Variant, len(product.Variants))
+
+	for i, v := range product.Variants {
+		apiVariants[i] = api.Variant{
+			ID:    v.ID,
+			Name:  v.Name,
+			Value: v.Value,
+			Unit:  v.Unit,
+			Price: v.Price,
+		}
+	}
+
+	result := api.ProductDetail{
+		ID:          product.Product.ID,
+		CategoryID:  product.Product.CategoryID,
+		Name:        product.Product.Name,
+		Description: product.Product.Description,
+		ImageURL:    product.Product.ImageURL,
+		Variants:    apiVariants,
+	}
+
+	response.RespondSuccess(c, http.StatusOK, result, "")
 }

@@ -1,7 +1,5 @@
 package api
 
-import "time"
-
 type GetProductQueryList struct {
 	CategoryID *int64  `form:"categoryId"`
 	Offset     *int    `form:"offset"`
@@ -13,11 +11,18 @@ type GetProductQueryList struct {
 }
 
 type Product struct {
+	ID          int64  `json:"id"`
+	CategoryID  int64  `json:"category_id"`
+	Name        string `json:"name"`
+	Description string `json:"description"`
+	ImageURL    string `json:"image_url"`
+}
+
+type ProductDetail struct {
 	ID          int64     `json:"id"`
 	CategoryID  int64     `json:"category_id"`
 	Name        string    `json:"name"`
 	Description string    `json:"description"`
-	Price       int64     `json:"price"`
 	ImageURL    string    `json:"image_url"`
-	CreatedAt   time.Time `json:"created_at"`
+	Variants    []Variant `json:"variants,omitempty"`
 }
