@@ -22,18 +22,21 @@ func main() {
 	productRepo := repository.NewProductRepo(db)
 	categoryRepo := repository.NewCategoryRepo(db)
 	addonRepo := repository.NewAddonRepo(db)
+	cartRepo := repository.NewCartRepo(db)
 
 	// services
 	productService := service.NewProductService(productRepo)
 	addonService := service.NewAddonService(addonRepo)
 	categoryService := service.NewCategoryService(categoryRepo)
+	cartService := service.NewCartService(cartRepo)
 
 	// handlers
 	productHandler := handler.NewProductHandler(productService)
 	addonHandler := handler.NewAddonHandler(addonService)
 	categoryHandler := handler.NewCategoryHandler(categoryService)
+	cartHandler := handler.NewCartHandler(cartService)
 
 	// router
-	r := NewRouter(productHandler, categoryHandler, addonHandler)
+	r := NewRouter(productHandler, categoryHandler, addonHandler, cartHandler)
 	r.Run(cfg.Addr)
 }
