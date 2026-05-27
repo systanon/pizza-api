@@ -9,5 +9,5 @@ import (
 )
 
 func NotFoundHandler(c *gin.Context) {
-	response.RespondError(c, http.StatusBadRequest, apperror.CodeRouteNotFound, "route not found")
+	response.RespondError(c, http.StatusNotFound, apperror.CodeRouteNotFound, "route not found")
 }
