@@ -21,6 +21,11 @@ func NewCategoryHandler(s *service.CategoryService) *CategoryHandler {
 func (h *CategoryHandler) GetCategoryList(c *gin.Context) {
 	categories, err := h.service.GetCategoryList(c)
 
+	if err != nil {
+		response.RespondError(c, http.StatusInternalServerError, apperror.CodeInternal, err.Error())
+		return
+	}
+
 	result := make([]api.Category, 0, len(categories))
 
 	for _, category := range categories {
@@ -30,10 +35,6 @@ func (h *CategoryHandler) GetCategoryList(c *gin.Context) {
 			Slug:      category.Slug,
 			CreatedAt: category.CreatedAt,
 		})
-	}
-	if err != nil {
-		response.RespondError(c, http.StatusInternalServerError, apperror.CodeInternal, err.Error())
-		return
 	}
 	response.RespondSuccess(c, http.StatusOK, result, "")
 }
