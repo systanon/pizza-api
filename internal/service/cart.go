@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"pizza-backend/internal/apperror"
 	"pizza-backend/internal/model"
 )
 
@@ -14,12 +15,18 @@ type CartRepository interface {
 	ClearCart(ctx context.Context, cartID string) error
 }
 
-type CartService struct {
-	repo CartRepository
+type ProductChecker interface {
+	HasVariants(ctx context.Context, productID int64) (bool, error)
+	IsValidVariant(ctx context.Context, productID int64, variantID int64) (bool, error)
 }
 
-func NewCartService(r CartRepository) *CartService {
-	return &CartService{repo: r}
+type CartService struct {
+	repo           CartRepository
+	productChecker ProductChecker
+}
+
+func NewCartService(r CartRepository, p ProductChecker) *CartService {
+	return &CartService{repo: r, productChecker: p}
 }
 
 func (s *CartService) CreateCart(ctx context.Context) (*model.Cart, error) {
@@ -34,6 +41,28 @@ func (s *CartService) AddItem(ctx context.Context, cartID string, productID int6
 	if addonIDs == nil {
 		addonIDs = []int64{}
 	}
+
+	hasVariants, err := s.productChecker.HasVariants(ctx, productID)
+	if err != nil {
+		return nil, err
+	}
+
+	if !hasVariants {
+		return nil, apperror.ErrNoPrice
+	}
+
+	if variantID == nil {
+		return nil, apperror.ErrVariantRequired
+	}
+
+	valid, err := s.productChecker.IsValidVariant(ctx, productID, *variantID)
+	if err != nil {
+		return nil, err
+	}
+	if !valid {
+		return nil, apperror.ErrVariantInvalid
+	}
+
 	return s.repo.AddItem(ctx, cartID, productID, variantID, quantity, addonIDs)
 }
 

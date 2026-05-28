@@ -28,7 +28,7 @@ func main() {
 	productService := service.NewProductService(productRepo)
 	addonService := service.NewAddonService(addonRepo)
 	categoryService := service.NewCategoryService(categoryRepo)
-	cartService := service.NewCartService(cartRepo)
+	cartService := service.NewCartService(cartRepo, productRepo)
 
 	// handlers
 	productHandler := handler.NewProductHandler(productService)

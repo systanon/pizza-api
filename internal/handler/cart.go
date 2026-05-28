@@ -69,11 +69,16 @@ func (h *CartHandler) AddItem(c *gin.Context) {
 
 	_, err := h.service.AddItem(c, cartID, req.ProductID, req.VariantID, req.Quantity, req.AddonIDs)
 	if err != nil {
-		if errors.Is(err, apperror.ErrNotFound) {
+		switch {
+		case errors.Is(err, apperror.ErrNotFound):
 			response.RespondError(c, http.StatusNotFound, apperror.CodeNotFound, "cart not found")
-			return
+		case errors.Is(err, apperror.ErrNoPrice),
+			errors.Is(err, apperror.ErrVariantRequired),
+			errors.Is(err, apperror.ErrVariantInvalid):
+			response.RespondError(c, http.StatusBadRequest, apperror.CodeValidation, err.Error())
+		default:
+			response.RespondError(c, http.StatusInternalServerError, apperror.CodeInternal, err.Error())
 		}
-		response.RespondError(c, http.StatusInternalServerError, apperror.CodeInternal, err.Error())
 		return
 	}
 

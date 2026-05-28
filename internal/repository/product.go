@@ -68,6 +68,21 @@ func (r *ProductRepo) GetProductList(ctx context.Context, f model.ProductFilter)
 	return products, total, nil
 }
 
+func (r *ProductRepo) HasVariants(ctx context.Context, productID int64) (bool, error) {
+	var count int
+	err := r.db.GetContext(ctx, &count,
+		`SELECT COUNT(*) FROM product_variant_prices WHERE product_id = $1`, productID)
+	return count > 0, err
+}
+
+func (r *ProductRepo) IsValidVariant(ctx context.Context, productID int64, variantID int64) (bool, error) {
+	var exists bool
+	err := r.db.QueryRowContext(ctx,
+		`SELECT EXISTS(SELECT 1 FROM product_variant_prices WHERE product_id = $1 AND variant_id = $2)`,
+		productID, variantID).Scan(&exists)
+	return exists, err
+}
+
 func (r *ProductRepo) GetProductByID(ctx context.Context, id int64) (*model.ProductDetailRepositoryDTO, error) {
 
 	query := `
