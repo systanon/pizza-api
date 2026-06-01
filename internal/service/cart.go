@@ -34,7 +34,12 @@ func (s *CartService) CreateCart(ctx context.Context) (*model.Cart, error) {
 }
 
 func (s *CartService) GetCart(ctx context.Context, cartID string) (*model.CartDetail, error) {
-	return s.repo.GetCart(ctx, cartID)
+	cart, err := s.repo.GetCart(ctx, cartID)
+	if err != nil {
+		return nil, err
+	}
+	cart.Total = calcTotal(cart.Items)
+	return cart, nil
 }
 
 func (s *CartService) AddItem(ctx context.Context, cartID string, productID int64, variantID *int64, quantity int, addonIDs []int64) (*model.CartItem, error) {
@@ -76,4 +81,17 @@ func (s *CartService) RemoveItem(ctx context.Context, cartID string, itemID int6
 
 func (s *CartService) ClearCart(ctx context.Context, cartID string) error {
 	return s.repo.ClearCart(ctx, cartID)
+}
+
+func calcTotal(items []model.CartItemDetail) int64 {
+	var total int64
+	for _, item := range items {
+		if item.VariantPrice != nil {
+			total += *item.VariantPrice * int64(item.Quantity)
+		}
+		for _, addon := range item.Addons {
+			total += addon.Price * int64(item.Quantity)
+		}
+	}
+	return total
 }

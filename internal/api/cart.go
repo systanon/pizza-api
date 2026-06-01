@@ -33,4 +33,5 @@ type CartItem struct {
 type CartResponse struct {
 	ID    string     `json:"id"`
 	Items []CartItem `json:"items"`
+	Total int64      `json:"total"`
 }

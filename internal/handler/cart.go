@@ -201,5 +201,5 @@ func cartDetailToAPI(cart *model.CartDetail) api.CartResponse {
 			Addons:       addons,
 		})
 	}
-	return api.CartResponse{ID: cart.Cart.ID, Items: items}
+	return api.CartResponse{ID: cart.Cart.ID, Items: items, Total: cart.Total}
 }

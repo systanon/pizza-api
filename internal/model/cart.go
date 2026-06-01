@@ -42,4 +42,5 @@ type CartItemAddonDetail struct {
 type CartDetail struct {
 	Cart
 	Items []CartItemDetail
+	Total int64
 }
