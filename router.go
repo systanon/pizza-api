@@ -12,6 +12,7 @@ func NewRouter(
 	addonHandler *handler.AddonHandler,
 	cartHandler *handler.CartHandler,
 	orderHandler *handler.OrderHandler,
+	stripeHandler *handler.StripeHandler,
 ) *gin.Engine {
 	r := gin.Default()
 	v1 := r.Group("/v1")
@@ -31,6 +32,9 @@ func NewRouter(
 
 		v1.POST("/orders", orderHandler.CreateOrder)
 		v1.GET("/orders/:id", orderHandler.GetOrder)
+		v1.POST("/orders/:id/checkout", stripeHandler.CreateCheckout)
+
+		v1.POST("/webhooks/stripe", stripeHandler.Webhook)
 	}
 	r.NoRoute(handler.NotFoundHandler)
 
