@@ -51,11 +51,11 @@ func (r *OrderRepo) CreateOrder(ctx context.Context, cartID, email string, items
 			return nil, err
 		}
 
-		for _, a := range item.Addons {
+		for _, addon := range item.Addons {
 			if _, err := tx.ExecContext(ctx,
 				`INSERT INTO order_item_addons (order_item_id, addon_id, addon_name, price)
 				 VALUES ($1, $2, $3, $4)`,
-				itemID, a.AddonID, a.AddonName, a.Price,
+				itemID, addon.AddonID, addon.AddonName, addon.Price,
 			); err != nil {
 				return nil, err
 			}
