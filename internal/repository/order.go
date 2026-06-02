@@ -68,6 +68,19 @@ func (r *OrderRepo) CreateOrder(ctx context.Context, cartID, email string, items
 	return &order, nil
 }
 
+func (r *OrderRepo) UpdateOrderStatus(ctx context.Context, orderID int64, status model.OrderStatus) error {
+	res, err := r.db.ExecContext(ctx,
+		`UPDATE orders SET status = $1 WHERE id = $2`, status, orderID)
+	if err != nil {
+		return err
+	}
+	n, _ := res.RowsAffected()
+	if n == 0 {
+		return apperror.ErrNotFound
+	}
+	return nil
+}
+
 func (r *OrderRepo) GetOrder(ctx context.Context, orderID int64) (*model.OrderDetail, error) {
 	var order model.Order
 	err := r.db.GetContext(ctx, &order,
