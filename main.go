@@ -31,6 +31,7 @@ func main() {
 	categoryService := service.NewCategoryService(categoryRepo)
 	cartService := service.NewCartService(cartRepo, productRepo)
 	orderService := service.NewOrderService(orderRepo, cartRepo)
+	stripeService := service.NewStripeService(orderRepo, cfg.StripeSecretKey, cfg.StripeWebhookSecret)
 
 	// handlers
 	productHandler := handler.NewProductHandler(productService)
@@ -38,8 +39,12 @@ func main() {
 	categoryHandler := handler.NewCategoryHandler(categoryService)
 	cartHandler := handler.NewCartHandler(cartService)
 	orderHandler := handler.NewOrderHandler(orderService)
+	stripeHandler := handler.NewStripeHandler(stripeService,
+		cfg.PaymentSuccessURL,
+		cfg.PaymentCancelURL,
+	)
 
 	// router
-	r := NewRouter(productHandler, categoryHandler, addonHandler, cartHandler, orderHandler)
+	r := NewRouter(productHandler, categoryHandler, addonHandler, cartHandler, orderHandler, stripeHandler)
 	r.Run(cfg.Addr)
 }
