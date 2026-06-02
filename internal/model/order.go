@@ -49,6 +49,13 @@ type OrderDetail struct {
 	Items []OrderItemDetail
 }
 
+// OrderAddonInput is an addon snapshot without a DB-assigned ID.
+type OrderAddonInput struct {
+	AddonID   int64
+	AddonName string
+	Price     int64
+}
+
 // OrderItemInput is a pre-computed snapshot passed from service to repository.
 type OrderItemInput struct {
 	ProductID    int64
@@ -58,5 +65,5 @@ type OrderItemInput struct {
 	VariantPrice int64
 	Quantity     int
 	ItemTotal    int64
-	Addons       []OrderItemAddon
+	Addons       []OrderAddonInput
 }
