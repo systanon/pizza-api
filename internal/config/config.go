@@ -3,8 +3,12 @@ package config
 import "os"
 
 type Config struct {
-	DatabaseURL string
-	Addr        string
+	DatabaseURL         string
+	Addr                string
+	StripeSecretKey     string
+	StripeWebhookSecret string
+	PaymentSuccessURL   string
+	PaymentCancelURL    string
 }
 
 func Load() Config {
@@ -14,7 +18,11 @@ func Load() Config {
 	}
 
 	return Config{
-		DatabaseURL: os.Getenv("PIZZA_DATABASE_URL"),
-		Addr:        addr,
+		DatabaseURL:         os.Getenv("PIZZA_DATABASE_URL"),
+		Addr:                addr,
+		StripeSecretKey:     os.Getenv("STRIPE_SECRET_KEY"),
+		StripeWebhookSecret: os.Getenv("STRIPE_WEBHOOK_SECRET"),
+		PaymentSuccessURL:   os.Getenv("PAYMENT_SUCCESS_URL"),
+		PaymentCancelURL:    os.Getenv("PAYMENT_CANCEL_URL"),
 	}
 }
