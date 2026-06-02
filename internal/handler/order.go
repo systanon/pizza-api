@@ -29,6 +29,11 @@ func (h *OrderHandler) CreateOrder(c *gin.Context) {
 		return
 	}
 
+	if !isValidCartID(req.CartID) {
+		response.RespondError(c, http.StatusBadRequest, apperror.CodeValidation, "invalid cart_id format")
+		return
+	}
+
 	order, err := h.service.CreateOrder(c, req.CartID, req.Email)
 	if err != nil {
 		switch {

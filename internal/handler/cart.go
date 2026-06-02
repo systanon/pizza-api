@@ -3,7 +3,6 @@ package handler
 import (
 	"errors"
 	"net/http"
-	"regexp"
 	"strconv"
 
 	"pizza-backend/internal/api"
@@ -14,8 +13,6 @@ import (
 
 	"github.com/gin-gonic/gin"
 )
-
-var uuidRe = regexp.MustCompile(`^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$`)
 
 type CartHandler struct {
 	service *service.CartService
@@ -171,10 +168,6 @@ func (h *CartHandler) ClearCart(c *gin.Context) {
 	}
 
 	response.RespondSuccess(c, http.StatusOK, nil, "cart cleared")
-}
-
-func isValidCartID(id string) bool {
-	return uuidRe.MatchString(id)
 }
 
 func cartDetailToAPI(cart *model.CartDetail) api.CartResponse {
