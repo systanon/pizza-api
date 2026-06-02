@@ -62,19 +62,16 @@ func buildOrderItems(cartItems []model.CartItemDetail) []model.OrderItemInput {
 		}
 
 		addonTotal := int64(0)
+		addons := make([]model.OrderAddonInput, 0, len(ci.Addons))
 		for _, a := range ci.Addons {
 			addonTotal += a.Price
-		}
-		itemTotal := (variantPrice + addonTotal) * int64(ci.Quantity)
-
-		addons := make([]model.OrderItemAddon, 0, len(ci.Addons))
-		for _, a := range ci.Addons {
-			addons = append(addons, model.OrderItemAddon{
+			addons = append(addons, model.OrderAddonInput{
 				AddonID:   a.AddonID,
 				AddonName: a.AddonName,
 				Price:     a.Price,
 			})
 		}
+		itemTotal := (variantPrice + addonTotal) * int64(ci.Quantity)
 
 		items = append(items, model.OrderItemInput{
 			ProductID:    ci.ProductID,
