@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"database/sql"
+	"strings"
 
 	"pizza-backend/internal/apperror"
 	"pizza-backend/internal/model"
@@ -151,14 +152,6 @@ func (r *CartRepo) GetCart(ctx context.Context, cartID string) (*model.CartDetai
 }
 
 func (r *CartRepo) AddItem(ctx context.Context, cartID string, productID int64, variantID *int64, quantity int, addonIDs []int64) (*model.CartItem, error) {
-	var exists bool
-	if err := r.db.QueryRowContext(ctx, `SELECT EXISTS(SELECT 1 FROM carts WHERE id=$1)`, cartID).Scan(&exists); err != nil {
-		return nil, err
-	}
-	if !exists {
-		return nil, apperror.ErrNotFound
-	}
-
 	tx, err := r.db.BeginTxx(ctx, nil)
 	if err != nil {
 		return nil, err
@@ -173,6 +166,9 @@ func (r *CartRepo) AddItem(ctx context.Context, cartID string, productID int64, 
 		cartID, productID, variantID, quantity,
 	).Scan(&item.ID, &item.CartID, &item.ProductID, &item.VariantID, &item.Quantity, &item.CreatedAt, &item.UpdatedAt)
 	if err != nil {
+		if strings.Contains(err.Error(), "violates foreign key constraint") {
+			return nil, apperror.ErrNotFound
+		}
 		return nil, err
 	}
 
@@ -218,8 +214,10 @@ func (r *CartRepo) RemoveItem(ctx context.Context, cartID string, itemID int64) 
 }
 
 func (r *CartRepo) ClearCart(ctx context.Context, cartID string) error {
+	// Verify cart exists — DELETE on cart_items won't fail if cart is missing
 	var exists bool
-	if err := r.db.QueryRowContext(ctx, `SELECT EXISTS(SELECT 1 FROM carts WHERE id=$1)`, cartID).Scan(&exists); err != nil {
+	if err := r.db.QueryRowContext(ctx,
+		`SELECT EXISTS(SELECT 1 FROM carts WHERE id=$1)`, cartID).Scan(&exists); err != nil {
 		return err
 	}
 	if !exists {
