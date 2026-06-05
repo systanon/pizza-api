@@ -1,6 +1,9 @@
 package config
 
-import "os"
+import (
+	"log"
+	"os"
+)
 
 type Config struct {
 	DatabaseURL         string
@@ -9,6 +12,21 @@ type Config struct {
 	StripeWebhookSecret string
 	PaymentSuccessURL   string
 	PaymentCancelURL    string
+}
+
+func (c Config) Validate() {
+	required := map[string]string{
+		"PIZZA_DATABASE_URL":  c.DatabaseURL,
+		"STRIPE_SECRET_KEY":   c.StripeSecretKey,
+		"STRIPE_WEBHOOK_SECRET": c.StripeWebhookSecret,
+		"PAYMENT_SUCCESS_URL": c.PaymentSuccessURL,
+		"PAYMENT_CANCEL_URL":  c.PaymentCancelURL,
+	}
+	for name, val := range required {
+		if val == "" {
+			log.Fatalf("required environment variable %s is not set", name)
+		}
+	}
 }
 
 func Load() Config {

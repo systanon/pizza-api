@@ -12,6 +12,7 @@ import (
 
 func main() {
 	cfg := config.Load()
+	cfg.Validate()
 
 	db := database.NewPostgres(cfg.DatabaseURL)
 	defer db.Close()
