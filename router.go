@@ -1,6 +1,7 @@
 package main
 
 import (
+	"net/http"
 	"pizza-backend/internal/handler"
 
 	"github.com/gin-gonic/gin"
@@ -15,6 +16,7 @@ func NewRouter(
 	stripeHandler *handler.StripeHandler,
 ) *gin.Engine {
 	r := gin.Default()
+	r.GET("/health", func(c *gin.Context) { c.Status(http.StatusOK) })
 	v1 := r.Group("/v1")
 	{
 		v1.GET("/categories", categoryHandler.GetCategoryList)
