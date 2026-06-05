@@ -25,6 +25,8 @@ type StripeService struct {
 }
 
 func NewStripeService(repo StripeOrderRepository, secretKey, webhookSecret string) *StripeService {
+	// stripe.Key is a package-level global — safe for a single-instance app,
+	// but avoid creating multiple StripeService instances with different keys.
 	stripe.Key = secretKey
 	return &StripeService{repo: repo, webhookSecret: webhookSecret}
 }
@@ -62,6 +64,8 @@ func (s *StripeService) CreateCheckoutSession(ctx context.Context, orderID int64
 }
 
 func (s *StripeService) HandleWebhook(ctx context.Context, payload []byte, signature string) error {
+	// IgnoreAPIVersionMismatch: Stripe CLI uses a newer API version than stripe-go v82 expects.
+	// Safe to ignore for local development; on production both versions should match.
 	event, err := webhook.ConstructEventWithOptions(payload, signature, s.webhookSecret,
 		webhook.ConstructEventOptions{IgnoreAPIVersionMismatch: true})
 	if err != nil {
