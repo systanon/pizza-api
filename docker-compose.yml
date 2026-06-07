@@ -1,6 +1,11 @@
 volumes:
   postgres:
 
+networks:
+  app-network:
+    name: app-network
+    driver: bridge
+
 services:
   postgres:
     image: 'postgres:17.2-alpine3.21'
@@ -18,6 +23,8 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+    networks:
+      - app-network
 
   pizza:
     build:
@@ -33,3 +40,5 @@ services:
         condition: service_healthy
     ports:
       - '${APP_PORT:-3002}:3002'
+    networks:
+      - app-network
