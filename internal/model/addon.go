@@ -20,5 +20,5 @@ type CategoryAddonRow struct {
 type Addon struct {
 	ID    int64
 	Name  string
-	Price float64
+	Price int64
 }

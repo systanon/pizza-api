@@ -28,7 +28,7 @@ func (s *AddonService) GetAddonListByCategoryID(ctx context.Context, categoryID 
 		result = append(result, model.Addon{
 			ID:    row.ID,
 			Name:  row.Name,
-			Price: float64(row.Price) / 100,
+			Price: row.Price,
 		})
 	}
 
